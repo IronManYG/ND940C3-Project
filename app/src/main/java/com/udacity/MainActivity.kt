@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,6 +21,7 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
+    var isChecked = false
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -33,13 +35,37 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         custom_button.setOnClickListener {
-            download()
+            if(!isChecked){
+                custom_button.checked(isChecked)
+                Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
+            } else{
+                custom_button.checked(isChecked)
+                download()
+            }
         }
     }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+
+            val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+
+            val query = DownloadManager.Query()
+            query.setFilterById(id!!)
+
+            val cursor = downloadManager.query(query)
+
+            if (cursor.moveToFirst()) {
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+
+                if (DownloadManager.STATUS_SUCCESSFUL == status) {
+                    custom_button.hasCompletedDownload()
+                }
+                if (DownloadManager.STATUS_FAILED == status) {
+                    custom_button.hasCompletedDownload()
+                }
+            }
         }
     }
 
@@ -72,14 +98,17 @@ class MainActivity : AppCompatActivity() {
             when (view.getId()) {
                 R.id.glide_radioButton ->
                     if (checked) {
+                        isChecked = true
                         URL = "https://github.com/bumptech/glide"
                     }
                 R.id.loadApp_radioButton ->
                     if (checked) {
+                        isChecked = true
                         URL = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
                     }
                 R.id.retrofit_radioButton ->
                     if (checked) {
+                        isChecked = true
                         URL = "https://github.com/square/retrofit"
                     }
             }
