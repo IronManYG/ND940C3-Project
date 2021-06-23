@@ -1,19 +1,20 @@
 package com.udacity
 
-import android.app.DownloadManager
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -21,11 +22,19 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
-    var isChecked = false
+    private var isChecked = false
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
+
+    // Notification ID.
+    private val NOTIFICATION_ID = 0
+
+    private var title = ""
+    private var description = ""
+    private var statusOfDownload = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +49,15 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
             } else{
                 custom_button.checked(isChecked)
+                statusOfDownload = "Progress"
                 download()
             }
         }
+
+        createChannel(
+            getString(R.string.download_notification_channel_id),
+            getString(R.string.download_notification_channel_name)
+        )
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -60,10 +75,14 @@ class MainActivity : AppCompatActivity() {
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
 
                 if (DownloadManager.STATUS_SUCCESSFUL == status) {
+                    statusOfDownload = "Success"
                     custom_button.hasCompletedDownload()
+                    startNotification()
                 }
                 if (DownloadManager.STATUS_FAILED == status) {
+                    statusOfDownload = "Fail"
                     custom_button.hasCompletedDownload()
+                    startNotification()
                 }
             }
         }
@@ -100,19 +119,105 @@ class MainActivity : AppCompatActivity() {
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/bumptech/glide"
+                        title = getString(R.string.glide_radio_title)
+                        description = getString(R.string.notification_glide_description) + " " + statusOfDownload
                     }
                 R.id.loadApp_radioButton ->
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
+                        title = getString(R.string.loadApp_radio_title)
+                        description = getString(R.string.notification_project_3_description) + " " + statusOfDownload
                     }
                 R.id.retrofit_radioButton ->
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/square/retrofit"
+                        title = getString(R.string.retrofit_radio_title)
+                        description = getString(R.string.notification_retrofit_description) + " " + statusOfDownload
                     }
             }
         }
     }
 
+    private fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
+        // Create the content intent for the notification, which launches
+        // DetailActivity
+        val contentIntent = Intent(applicationContext, DetailActivity::class.java)
+
+        pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            NOTIFICATION_ID,
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Build the notification
+        val builder = NotificationCompat.Builder(
+            applicationContext,
+            applicationContext.getString(R.string.download_notification_channel_id)
+        )
+
+            .setSmallIcon(R.drawable.ic_assistant_black_24dp)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+
+            .setAutoCancel(true)
+
+            .addAction(
+                R.drawable.ic_assistant_black_24dp,
+                "Check the status",
+                pendingIntent
+            )
+
+
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        notify(NOTIFICATION_ID, builder.build())
+
+    }
+
+    //Cancel all notifications
+    fun NotificationManager.cancelNotifications() {
+        cancelAll()
+    }
+
+
+    private fun createChannel(channelId: String, channelName: String) {
+        //START create a channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+                //disable badges for this channel
+                .apply {
+                    setShowBadge(false)
+                }
+
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = getString(R.string.download_notification_channel_description)
+
+            val notificationManager = getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+    }
+
+    private fun startNotification() {
+        notificationManager = ContextCompat.getSystemService(
+            applicationContext,
+            NotificationManager::class.java
+        ) as NotificationManager
+
+        notificationManager.sendNotification(
+            description,
+            applicationContext
+        )
+    }
 }

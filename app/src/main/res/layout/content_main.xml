@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:onClick="onRadioButtonClicked"
-            android:text="@string/glide_radio"
+            android:text="@string/glide_radio_title"
             android:textSize="20sp" />
 
         <RadioButton
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:onClick="onRadioButtonClicked"
-            android:text="@string/loadApp_radio"
+            android:text="@string/loadApp_radio_title"
             android:textSize="20sp" />
 
         <RadioButton
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onRadioButtonClicked"
-            android:text="@string/retrofit_radio"
+            android:text="@string/retrofit_radio_title"
             android:textSize="20sp" />
     </RadioGroup>
 
