@@ -20,8 +20,15 @@ class DetailActivity : AppCompatActivity() {
         ) as NotificationManager
         notificationManager.cancel(0)
 
-        file_name_content.text = ""
-        status_content.text = ""
+        file_name_content.text = ButtonState.Completed.fieName
+
+        if(ButtonState.Completed.status == "Success") {
+            status_content.setTextColor(getColor(android.R.color.holo_green_dark))
+        } else if (ButtonState.Completed.status == "Fail"){
+            status_content.setTextColor(getColor(android.R.color.holo_red_dark))
+        }
+
+        status_content.text = ButtonState.Completed.status
 
         ok_button.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)

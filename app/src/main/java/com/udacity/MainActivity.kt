@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
     // Notification ID.
     private val NOTIFICATION_ID = 0
 
-    private var title = ""
+
     private var description = ""
-    private var statusOfDownload = ""
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
             } else{
                 custom_button.checked(isChecked)
-                statusOfDownload = "Progress"
+                ButtonState.Loading.status = "Progress"
                 download()
             }
         }
@@ -75,12 +75,12 @@ class MainActivity : AppCompatActivity() {
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
 
                 if (DownloadManager.STATUS_SUCCESSFUL == status) {
-                    statusOfDownload = "Success"
+                    ButtonState.Completed.status = "Success"
                     custom_button.hasCompletedDownload()
                     startNotification()
                 }
                 if (DownloadManager.STATUS_FAILED == status) {
-                    statusOfDownload = "Fail"
+                    ButtonState.Completed.status = "Fail"
                     custom_button.hasCompletedDownload()
                     startNotification()
                 }
@@ -103,6 +103,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+
+        var mTitle = ""
+
         private var URL =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
         private const val CHANNEL_ID = "channelId"
@@ -119,22 +122,25 @@ class MainActivity : AppCompatActivity() {
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/bumptech/glide"
-                        title = getString(R.string.glide_radio_title)
-                        description = getString(R.string.notification_glide_description) + " " + statusOfDownload
+                        mTitle = getString(R.string.glide_radio_title)
+                        ButtonState.Completed.fieName = mTitle
+                        description = getString(R.string.notification_glide_description) + " " + ButtonState.Completed.status
                     }
                 R.id.loadApp_radioButton ->
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
-                        title = getString(R.string.loadApp_radio_title)
-                        description = getString(R.string.notification_project_3_description) + " " + statusOfDownload
+                        mTitle = getString(R.string.loadApp_radio_title)
+                        ButtonState.Completed.fieName = mTitle
+                        description = getString(R.string.notification_project_3_description) + " " + ButtonState.Completed.status
                     }
                 R.id.retrofit_radioButton ->
                     if (checked) {
                         isChecked = true
                         URL = "https://github.com/square/retrofit"
-                        title = getString(R.string.retrofit_radio_title)
-                        description = getString(R.string.notification_retrofit_description) + " " + statusOfDownload
+                        mTitle = getString(R.string.retrofit_radio_title)
+                        ButtonState.Completed.fieName = mTitle
+                        description = getString(R.string.notification_retrofit_description) + " " + ButtonState.Completed.status
                     }
             }
         }
@@ -159,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         )
 
             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
-            .setContentTitle(title)
+            .setContentTitle(mTitle)
             .setContentText(messageBody)
 
             .setAutoCancel(true)
@@ -220,4 +226,5 @@ class MainActivity : AppCompatActivity() {
             applicationContext
         )
     }
+
 }
