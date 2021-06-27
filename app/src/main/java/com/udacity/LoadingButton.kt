@@ -17,6 +17,9 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
+        private const val DEFAULT_LOADING_CIRCLE_COLOR = R.color.colorAccent
+        private const val DEFAULT_WAITING_RECT_COLOR = R.color.colorPrimary
+        private const val DEFAULT_LOADING_RECT_COLOR = R.color.colorPrimaryDark
         private const val DEFAULT_TEXT_COLOR = Color.WHITE
     }
 
@@ -44,24 +47,24 @@ class LoadingButton @JvmOverloads constructor(
     private val loadingArcPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // Colors
-    var loadingCircleColor: Int = ContextCompat.getColor(context, R.color.colorAccent)
+    var loadingCircleColor: Int = DEFAULT_LOADING_CIRCLE_COLOR
         set(@ColorInt color) {
             field = color
             loadingArcPaint.color = color
             invalidate()
         }
 
-    var waitingRectColor: Int = ContextCompat.getColor(context, R.color.colorPrimary)
+    var waitingRectColor: Int = DEFAULT_WAITING_RECT_COLOR
         set(@ColorInt color) {
             field = color
             waitingPaint.color = color
             invalidate()
         }
 
-    var loadingRectColor: Int = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+    var loadingRectColor: Int = DEFAULT_LOADING_RECT_COLOR
         set(@ColorInt color) {
             field = color
-            waitingPaint.color = color
+            loadingPaint.color = color
             invalidate()
         }
 
@@ -85,6 +88,8 @@ class LoadingButton @JvmOverloads constructor(
 
 
     init {
+        parseAttr(attrs)
+
         // Made button clickable
         isClickable = true
 
@@ -113,6 +118,36 @@ class LoadingButton @JvmOverloads constructor(
             typeface = Typeface.create("", Typeface.NORMAL)
             color = textColor
         }
+
+    }
+
+    private fun parseAttr(attrs: AttributeSet?) {
+        val typedArray = context.obtainStyledAttributes(
+            attrs, R.styleable.LoadingButton, 0, 0
+        )
+
+        loadingCircleColor = typedArray.getColor(
+            R.styleable.LoadingButton_loading_circle_color,
+            ContextCompat.getColor(context,DEFAULT_LOADING_CIRCLE_COLOR)
+        )
+
+        waitingRectColor = typedArray.getColor(
+            R.styleable.LoadingButton_waiting_rectColor,
+            ContextCompat.getColor(context, DEFAULT_WAITING_RECT_COLOR)
+        )
+
+        loadingRectColor = typedArray.getColor(
+            R.styleable.LoadingButton_loading_rectColor,
+            ContextCompat.getColor(context, DEFAULT_LOADING_RECT_COLOR)
+        )
+
+        textColor = typedArray.getColor(
+            R.styleable.LoadingButton_text_color,
+            DEFAULT_TEXT_COLOR
+        )
+
+
+        typedArray.recycle()
     }
 
     override fun performClick(): Boolean {
