@@ -31,8 +31,6 @@ class DetailActivity : AppCompatActivity() {
         status_content.text = ButtonState.Completed.status
 
         ok_button.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
             finish()
         }
 
