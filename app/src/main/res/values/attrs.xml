@@ -2,8 +2,8 @@
 <resources>
     <declare-styleable name="LoadingButton">
         <attr name="loading_circle_color" format="color" />
-        <attr name="waiting_rectColor" format="color" />
-        <attr name="loading_rectColor" format="color" />
+        <attr name="waiting_rect_color" format="color" />
+        <attr name="loading_rect_color" format="color" />
         <attr name="text_color" format="color" />
     </declare-styleable>
 </resources>

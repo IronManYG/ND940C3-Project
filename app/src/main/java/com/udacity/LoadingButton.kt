@@ -6,10 +6,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
-import kotlin.math.log
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -20,7 +18,7 @@ class LoadingButton @JvmOverloads constructor(
         private const val DEFAULT_LOADING_CIRCLE_COLOR = R.color.colorAccent
         private const val DEFAULT_WAITING_RECT_COLOR = R.color.colorPrimary
         private const val DEFAULT_LOADING_RECT_COLOR = R.color.colorPrimaryDark
-        private const val DEFAULT_TEXT_COLOR = Color.WHITE
+        private const val DEFAULT_TEXT_COLOR = R.color.white
     }
 
     private var isChecked = false
@@ -132,18 +130,18 @@ class LoadingButton @JvmOverloads constructor(
         )
 
         waitingRectColor = typedArray.getColor(
-            R.styleable.LoadingButton_waiting_rectColor,
+            R.styleable.LoadingButton_waiting_rect_color,
             ContextCompat.getColor(context, DEFAULT_WAITING_RECT_COLOR)
         )
 
         loadingRectColor = typedArray.getColor(
-            R.styleable.LoadingButton_loading_rectColor,
+            R.styleable.LoadingButton_loading_rect_color,
             ContextCompat.getColor(context, DEFAULT_LOADING_RECT_COLOR)
         )
 
         textColor = typedArray.getColor(
             R.styleable.LoadingButton_text_color,
-            DEFAULT_TEXT_COLOR
+            ContextCompat.getColor(context,DEFAULT_TEXT_COLOR)
         )
 
 
